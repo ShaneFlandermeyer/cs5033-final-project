@@ -57,7 +57,7 @@ but have different frequency content and vice-versa.
 \section{Methodology}
 The goal of this project is to implement (and hopefully improve upon)
 the methodology from \cite{OShea2016a}, which uses raw IQ data to train a
-CNN to classify 11 modulation types. Since my primary focus is dataset
+CNN to classify different modulation types. Since my primary focus is dataset
 generation, this network will be constructed using libraries such as Keras and
 Tensorflow. Time permitting, I would also like to explore the approach taken
 in \cite{Vagollari2021}, which uses the YOLO algorithm \cite{Redmon2016} to
@@ -77,7 +77,13 @@ and fading), and center frequency/sampling offsets. Coupled with
 the methodology outlined above, my project primarily falls under category I (Application).
 
 \section{Evaluation Plan}
-
+I plan to develop a dataset generation tool that can simulate at least five
+different communications modulation schemes. This tool will be able to
+simulate the common signal imperfections described in the previous section in
+order to make the dataset more representative of real-world scenarios. Next, I
+will train a CNN on the generated datasets to replicate the results from
+\cite{OShea2016a}, which achieves a classification accuracy of about 70\% at
+high signal-to-noise ratios ($\geq$20 dB).
 
 \bibliographystyle{plain}
 \bibliography{../reference}
