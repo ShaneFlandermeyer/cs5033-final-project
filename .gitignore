@@ -4,3 +4,4 @@
 build*/
 examples/grc/*.py
 *.bak
+data/
