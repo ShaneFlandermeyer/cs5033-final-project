@@ -38,7 +38,35 @@ class qpsk(Signal):
         # Constellation object
         self.constellation = digital.constellation_qpsk()
 
+class psk(Signal):
+    """
+    Object representing a general phase shift keying (PSK) constellation
+    """
+    def __init__(self,order):
+        Signal.__init__(self)
+        # Metadata
+        self.detail.type = "digital"
+        self.detail.modulation = "psk"
+        self.detail.order = order
+        # Constellation object
+        if order == 2:
+            self.constellation = digital.constellation_bpsk()
+        elif order == 4:
+            self.constellation = digital.constellation_qpsk()
+        elif order == 8:
+            self.constellation = digital.constellation_8psk()
+        elif order == 16:
+            self.constellation = digital.constellation_16psk()
+        elif order == 32:
+            self.constellation = digital.constellation_32psk()
+        elif order == 64:
+            self.constellation = digital.constellation_64psk()
+        else:
+            # TODO: Should this raise an error or do something different?
+            raise ValueError("Invalid order for PSK constellation")
 
+
+# TODO: I don't like using this
 modulations = {
     "digital": [bpsk, qpsk]
 }
