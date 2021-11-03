@@ -44,7 +44,8 @@ class detail():
         
         # Had to make 'modulation' the class variable storing the signal class
         # (analog/digital) because class is a keyword in python
-        d[self.CLASS_KEY] = d.pop("modulation")
+        if 'modulation' in d:
+            d[self.CLASS_KEY] = d.pop('modulation')
         return d
 
 if __name__ == '__main__':

@@ -52,7 +52,7 @@ class bpsk(Signal):
     """
 
     def __init__(self):
-        psk.__init__(order=2)
+        psk.__init__(self,order=2)
 
 
 class qpsk(Signal):
@@ -60,4 +60,4 @@ class qpsk(Signal):
         """
         Object representing a quadrature phase shift keying (QPSK) constellation.
         """
-        psk.__init__(order=4)
+        psk.__init__(self,order=4)
