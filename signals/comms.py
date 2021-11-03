@@ -36,14 +36,8 @@ class psk(Signal):
             self.constellation = digital.constellation_qpsk()
         elif order == 8:
             self.constellation = digital.constellation_8psk()
-        elif order == 16:
-            self.constellation = digital.constellation_16psk()
-        elif order == 32:
-            self.constellation = digital.constellation_32psk()
-        elif order == 64:
-            self.constellation = digital.constellation_64psk()
         else:
-            raise ValueError("Invalid order for PSK constellation")
+            raise ValueError("Object currently only supports BPSK, QPSK, and 8PSK")
 
 
 class bpsk(Signal):
