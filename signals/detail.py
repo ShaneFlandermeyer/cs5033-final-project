@@ -15,27 +15,32 @@ class detail():
     CHANNEL_KEY = "channel"
     CLASS_VARIANT_KEY = "class_variant"
     def __init__(self):
-        self.type = ""
-        self.modulation = ""
-        self.carrier_variant = ""
-        self.symbol_variant = ""
-        self.order = 0
-        self.duplexing = ""
-        self.multiplexing = ""
-        self.multiple_access = ""
-        self.spreading = ""
-        self.bandwidth = 0.0
-        self.channel = 0
-        self.class_variant = ""
+        self.type = None
+        self.modulation = None
+        self.carrier_variant = None
+        self.symbol_variant = None
+        self.order = None
+        self.duplexing = None
+        self.multiplexing = None
+        self.multiple_access = None
+        self.spreading = None
+        self.bandwidth = None
+        self.channel = None
+        self.class_variant = None
 
     def dict(self):
         """
         Convert the supplied metadata to a dictionary of dictionaries
         """
-        d = {self.DETAIL_KEY:vars(self)}
+        d = vars(self)
+        # If any of the values are None, remove them from the dictionary
+        for key,value in d.copy().items():
+            if value is None:
+                del d[key]
+        
         # Had to make 'modulation' the class variable storing the signal class
         # (analog/digital) because class is a keyword in python
-        d[self.DETAIL_KEY][self.CLASS_KEY] = d[self.DETAIL_KEY].pop("modulation")
+        d[self.CLASS_KEY] = d.pop("modulation")
         return d
 
 if __name__ == '__main__':
