@@ -1,5 +1,9 @@
 class detail():
     """
+    Store metadata needed to describe various signals using the SigMF signal
+    extension
+    https://github.com/gnuradio/SigMF/blob/sigmf-v1.x/extensions/signal.sigmf-ext.md#the-type-field
+    TODO: This is currently only really useful for communications signals
     """
     DETAIL_KEY = "signal:detail"
     TYPE_KEY = "type"
