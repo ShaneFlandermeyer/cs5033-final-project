@@ -17,32 +17,13 @@ class Signal():
         self.detail = detail()
 
 
-class bpsk(Signal):
-    def __init__(self):
-        Signal.__init__(self)
-        # Metadata
-        self.detail.type = "digital"
-        self.detail.modulation = "psk"
-        self.detail.order = 2
-        # Constellation
-        self.constellation = digital.constellation_bpsk()
-
-
-class qpsk(Signal):
-    def __init__(self):
-        Signal.__init__(self)
-        # Metadata
-        self.detail.type = "digital"
-        self.detail.modulation = "psk"
-        self.detail.order = 4
-        # Constellation object
-        self.constellation = digital.constellation_qpsk()
-
 class psk(Signal):
     """
-    Object representing a general phase shift keying (PSK) constellation
+    Object representing a general phase shift keying (PSK) constellation. The
+    modulation order can be any power of 2
     """
-    def __init__(self,order):
+
+    def __init__(self, order):
         Signal.__init__(self)
         # Metadata
         self.detail.type = "digital"
@@ -62,11 +43,21 @@ class psk(Signal):
         elif order == 64:
             self.constellation = digital.constellation_64psk()
         else:
-            # TODO: Should this raise an error or do something different?
             raise ValueError("Invalid order for PSK constellation")
 
 
-# TODO: I don't like using this
-modulations = {
-    "digital": [bpsk, qpsk]
-}
+class bpsk(Signal):
+    """
+    Object representing a binary phase shift keying (BPSK) constellation.
+    """
+
+    def __init__(self):
+        psk.__init__(order=2)
+
+
+class qpsk(Signal):
+    def __init__(self):
+        """
+        Object representing a quadrature phase shift keying (QPSK) constellation.
+        """
+        psk.__init__(order=4)
