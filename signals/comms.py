@@ -31,10 +31,13 @@ class psk(Signal):
         self.detail.order = order
         # Constellation object
         if order == 2:
+            self.label = "BPSK"
             self.constellation = digital.constellation_bpsk()
         elif order == 4:
+            self.label = "QPSK"
             self.constellation = digital.constellation_qpsk()
         elif order == 8:
+            self.label = "8PSK"
             self.constellation = digital.constellation_8psk()
         else:
             raise ValueError("Object currently only supports BPSK, QPSK, and 8PSK")
@@ -47,6 +50,7 @@ class bpsk(Signal):
 
     def __init__(self):
         psk.__init__(self,order=2)
+        self.label = "BPSK"
 
 
 class qpsk(Signal):
@@ -55,3 +59,4 @@ class qpsk(Signal):
         Object representing a quadrature phase shift keying (QPSK) constellation.
         """
         psk.__init__(self,order=4)
+        self.label = "QPSK"
