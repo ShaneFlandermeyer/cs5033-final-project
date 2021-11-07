@@ -86,7 +86,7 @@ class LinearFMWaveform(RadarWaveform):
                   TODO: Would be ideal to move this to the sample() method
     """
 
-    def __init__(self, bandwidth, pulsewidth, sampRate):
+    def __init__(self, bandwidth, pulsewidth, sampRate, **kwargs):
         super().__init__()
         # Define metadata
         self.detail.type='analog'
@@ -119,7 +119,7 @@ class SquareWaveform(RadarWaveform):
       - sampRate: The sampling rate of the waveform (Hz)
     """
 
-    def __init__(self, pulsewidth=100e-6, sampRate=10e6):
+    def __init__(self, pulsewidth, sampRate,**kwargs):
         super().__init__()
         # Define metadata
         self.detail.type='digital'
