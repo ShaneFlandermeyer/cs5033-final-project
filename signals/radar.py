@@ -21,30 +21,37 @@ class RadarTransmitter(gr.hier_block2):
     """
 
     def __init__(self, waveform, name='RadarTransmitter', nSamps=None):
-        gr.hier_block2.__init__(self, name,
-                                gr.io_signature(0, 0, 0),
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex))
-        src = blocks.vector_source_c(waveform.sample(), True)
-        if nSamps is None:
-          nSamps = len(waveform.sample())
-        head = blocks.head(gr.sizeof_gr_complex, nSamps)
-        self.connect(src, head, self)
+      gr.hier_block2.__init__(self, name,
+                              gr.io_signature(0, 0, 0),
+                              gr.io_signature(1, 1, gr.sizeof_gr_complex))
+      self.src = blocks.vector_source_c(waveform.sample(), True)
+      if nSamps is None:
+        nSamps = len(waveform.sample())
+      self.head = blocks.head(gr.sizeof_gr_complex, nSamps)
+      self.connect(self.src, self.head, self)
+
+    def reset(self):
+        """
+        Reset the counter on the internal head block
+        """
+        self.head.reset()
 
 
 class RadarWaveform():
     """
     An abstract parent class for all radar waveform objects
-
+    # TODO: For now, assuming these object are immutable
     Parameters
     ----------
+
     """
-    DETAIL_KEY = "signal:detail"
+    DETAIL_KEY="signal:detail"
 
     def __init__(self):
-        self.detail = detail()
-        self.label = ''
+        self.detail=detail()
+        self.label=''
 
-    @abstractmethod
+    @ abstractmethod
     def sample(self):
         """
         Generate a sampled version of this waveform
@@ -82,23 +89,23 @@ class LinearFMWaveform(RadarWaveform):
     def __init__(self, bandwidth, pulsewidth, sampRate):
         super().__init__()
         # Define metadata
-        self.detail.type = 'analog'
-        self.detail.modulation = 'fm'
-        self.detail.bandwidth = bandwidth
-        self.label = 'LFM'
+        self.detail.type='analog'
+        self.detail.modulation='fm'
+        self.detail.bandwidth=bandwidth
+        self.label='LFM'
         # Define actual waveform data
-        self.bandwidth = bandwidth
-        self.pulsewidth = pulsewidth
-        self.sampRate = sampRate
+        self.bandwidth=bandwidth
+        self.pulsewidth=pulsewidth
+        self.sampRate=sampRate
 
     def sample(self):
-        data = np.zeros((round(self.sampRate*self.pulsewidth)),
+        data=np.zeros((round(self.sampRate*self.pulsewidth)),
                         dtype=np.complex64)
-        Ts = 1 / self.sampRate
-        t = np.arange(0, self.pulsewidth-Ts, Ts)
-        phase = -self.bandwidth/2*t + self.bandwidth / \
+        Ts=1 / self.sampRate
+        t=np.arange(0, self.pulsewidth-Ts, Ts)
+        phase=-self.bandwidth/2*t + self.bandwidth / \
             (2*self.pulsewidth)*(t**2)
-        data = np.exp(1j*phase)
+        data=np.exp(1j*phase)
         return data
 
 
@@ -112,31 +119,31 @@ class SquareWaveform(RadarWaveform):
       - sampRate: The sampling rate of the waveform (Hz)
     """
 
-    def __init__(self, pulsewidth, sampRate):
+    def __init__(self, pulsewidth=100e-6, sampRate=10e6):
         super().__init__()
         # Define metadata
-        self.detail.type = 'digital'
-        self.detail.modulation = 'ask'
-        self.label = 'Square'
+        self.detail.type='digital'
+        self.detail.modulation='ask'
+        self.label='Square'
         # Define waveform parameters
-        self.pulsewidth = pulsewidth
-        self.sampRate = sampRate
-        self.bandwidth = 1 / self.pulsewidth
+        self.pulsewidth=pulsewidth
+        self.sampRate=sampRate
+        self.bandwidth=1 / self.pulsewidth
 
     def sample(self):
-        nSamps = round(self.sampRate*self.pulsewidth)
+        nSamps=round(self.sampRate*self.pulsewidth)
         return np.ones((nSamps,), dtype=np.complex64)
 
 
 if __name__ == '__main__':
-    bandwidth = 1e6
-    pulsewidth = 100e-6
-    sampRate = 1e6
-    wave = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
+    bandwidth=1e6
+    pulsewidth=100e-6
+    sampRate=1e6
+    wave=LinearFMWaveform(bandwidth, pulsewidth, sampRate)
     # Generate the flowgraph
-    tb = gr.top_block()
-    tx = wave.transmitter()
-    sink = blocks.vector_sink_c()
+    tb=gr.top_block()
+    tx=wave.transmitter()
+    sink=blocks.vector_sink_c()
     tb.connect(tx, sink)
     tb.run()
     plt.plot(np.real(sink.data()))
