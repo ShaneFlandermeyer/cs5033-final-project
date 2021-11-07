@@ -5,10 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gnuradio import gr, blocks
 
-# TODO: The Transmitter and Waveform class might be better placed in a separate file
-
-
-class Transmitter(gr.hier_block2):
+class RadarTransmitter(gr.hier_block2):
     """
     A class used for propagating signals from a waveform object through a GNU
     Radio flowgraph
@@ -18,11 +15,11 @@ class Transmitter(gr.hier_block2):
       - waveform: The waveform object to transmit
                   TODO: Allow this to be an array of samples
       - name: The name of the hierarchicial block
-              Default: 'Transmitter'
+              Default: 'RadarTransmitter'
       - TODO: Add a pulse repetition frequency (PRF) parameter
     """
 
-    def __init__(self, waveform, name='Transmitter', nSamps=100):
+    def __init__(self, waveform, name='RadarTransmitter', nSamps=100):
         gr.hier_block2.__init__(self, name,
                                 gr.io_signature(0, 0, 0),
                                 gr.io_signature(1, 1, gr.sizeof_gr_complex))
@@ -31,7 +28,7 @@ class Transmitter(gr.hier_block2):
         self.connect(src, head, self)
 
 
-class Waveform():
+class RadarWaveform():
     """
     An abstract parent class for all radar waveform objects
 
@@ -49,7 +46,7 @@ class Waveform():
         pass
 
 
-class LinearFMWaveform(Waveform):
+class LinearFMWaveform(RadarWaveform):
     """
     A class defining a linear frequency-modulated (LFM) waveform.
 
@@ -98,10 +95,10 @@ if __name__ == '__main__':
     lfm = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
     # Generate the flowgraph
     tb = gr.top_block()
-    tx = Transmitter(lfm,nSamps=int(sampRate*pulsewidth))
+    tx = RadarTransmitter(lfm,nSamps=int(sampRate*pulsewidth))
     sink = blocks.vector_sink_c()
     tb.connect(tx,sink)
     tb.run()
-    plt.plot(sink.data())
+    plt.plot(np.real(sink.data()))
     plt.show()
     
