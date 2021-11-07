@@ -20,8 +20,14 @@ class Waveform():
 
 class LinearFMWaveform(Waveform):
     """
+    A class defining a linear frequency-modulated (LFM) waveform.
+    
     Parameters
     ----------
+      - bandwidth: The sweep bandwidth of the waveform (Hz)
+      - pulsewidth: The time duration of the waveform (s)
+      - sampRate: The sample rate of the waveform (Hz)
+                  TODO: Would be ideal to move this to the sample() method
     """
 
     def __init__(self, bandwidth, pulsewidth, sampRate):
