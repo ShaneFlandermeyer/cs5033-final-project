@@ -1,10 +1,40 @@
+from gnuradio.gr import top_block
 from signals.detail import detail
 from abc import abstractmethod
 import numpy as np
 import matplotlib.pyplot as plt
+from gnuradio import gr, blocks
+
+# TODO: The Transmitter and Waveform class might be better placed in a separate file
+
+
+class Transmitter(gr.hier_block2):
+    """
+    A class used for propagating signals from a waveform object through a GNU
+    Radio flowgraph
+
+    Parameters
+    ----------
+      - waveform: The waveform object to transmit
+                  TODO: Allow this to be an array of samples
+      - name: The name of the hierarchicial block
+              Default: 'Transmitter'
+      - TODO: Add a pulse repetition frequency (PRF) parameter
+    """
+
+    def __init__(self, waveform, name='Transmitter', nSamps=100):
+        gr.hier_block2.__init__(self, name,
+                                gr.io_signature(0, 0, 0),
+                                gr.io_signature(1, 1, gr.sizeof_gr_complex))
+        src = blocks.vector_source_c(waveform.sample(), True)
+        head = blocks.head(gr.sizeof_gr_complex, nSamps)
+        self.connect(src, head, self)
+
 
 class Waveform():
     """
+    An abstract parent class for all radar waveform objects
+
     Parameters
     ----------
     """
@@ -13,15 +43,16 @@ class Waveform():
     def __init__(self):
         self.detail = detail()
         self.label = ''
+
     @abstractmethod
     def sample(self):
-      pass
+        pass
 
 
 class LinearFMWaveform(Waveform):
     """
     A class defining a linear frequency-modulated (LFM) waveform.
-    
+
     Parameters
     ----------
       - bandwidth: The sweep bandwidth of the waveform (Hz)
@@ -50,7 +81,8 @@ class LinearFMWaveform(Waveform):
         ----------
           - self: The LFM object to generate
         """
-        data = np.zeros((round(self.sampRate*self.pulsewidth)), dtype=np.complex64)
+        data = np.zeros((round(self.sampRate*self.pulsewidth)),
+                        dtype=np.complex64)
         Ts = 1 / self.sampRate
         t = np.arange(0, self.pulsewidth-Ts, Ts)
         phase = -self.bandwidth/2*t + self.bandwidth / \
@@ -60,6 +92,16 @@ class LinearFMWaveform(Waveform):
 
 
 if __name__ == '__main__':
-    lfm = LinearFMWaveform(1e6, 100e-6, 1e6)
-    plt.plot(np.real(lfm.sample()))
+    bandwidth = 1e6
+    pulsewidth = 100e-6
+    sampRate = 1e6
+    lfm = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
+    # Generate the flowgraph
+    tb = gr.top_block()
+    tx = Transmitter(lfm,nSamps=int(sampRate*pulsewidth))
+    sink = blocks.vector_sink_c()
+    tb.connect(tx,sink)
+    tb.run()
+    plt.plot(sink.data())
     plt.show()
+    
