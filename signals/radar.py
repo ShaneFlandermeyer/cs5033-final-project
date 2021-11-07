@@ -45,6 +45,17 @@ class RadarWaveform():
     def sample(self):
         pass
 
+    def transmitter(self, **kwargs):
+      """
+      Return a RadarTransmitter object that will transmit this waveform
+
+      Parameters:
+      -----------
+        - name: A string giving the name of the transmitter block
+        - nSamps: The number of samples to transmit
+      """
+      return RadarTransmitter(self, **kwargs)
+
 
 class LinearFMWaveform(RadarWaveform):
     """
@@ -95,7 +106,8 @@ if __name__ == '__main__':
     lfm = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
     # Generate the flowgraph
     tb = gr.top_block()
-    tx = RadarTransmitter(lfm,nSamps=int(sampRate*pulsewidth))
+    tx = lfm.transmitter(name='RadarTransmitter',nSamps=int(sampRate*pulsewidth))
+    # tx = RadarTransmitter(lfm,nSamps=int(sampRate*pulsewidth))
     sink = blocks.vector_sink_c()
     tb.connect(tx,sink)
     tb.run()
