@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gnuradio import gr, blocks
 
+
 class RadarTransmitter(gr.hier_block2):
     """
     A class used for propagating signals from a waveform object through a GNU
@@ -19,11 +20,13 @@ class RadarTransmitter(gr.hier_block2):
       - TODO: Add a pulse repetition frequency (PRF) parameter
     """
 
-    def __init__(self, waveform, name='RadarTransmitter', nSamps=100):
+    def __init__(self, waveform, name='RadarTransmitter', nSamps=None):
         gr.hier_block2.__init__(self, name,
                                 gr.io_signature(0, 0, 0),
                                 gr.io_signature(1, 1, gr.sizeof_gr_complex))
         src = blocks.vector_source_c(waveform.sample(), True)
+        if nSamps is None:
+          nSamps = len(waveform.sample())
         head = blocks.head(gr.sizeof_gr_complex, nSamps)
         self.connect(src, head, self)
 
@@ -43,18 +46,25 @@ class RadarWaveform():
 
     @abstractmethod
     def sample(self):
+        """
+        Generate a sampled version of this waveform
+
+        Parameters
+        ----------
+          - self: The waveform object to be generated
+        """
         pass
 
     def transmitter(self, **kwargs):
-      """
-      Return a RadarTransmitter object that will transmit this waveform
+        """
+        Return a RadarTransmitter object that will transmit this waveform
 
-      Parameters:
-      -----------
-        - name: A string giving the name of the transmitter block
-        - nSamps: The number of samples to transmit
-      """
-      return RadarTransmitter(self, **kwargs)
+        Parameters:
+        -----------
+          - name: A string giving the name of the transmitter block
+          - nSamps: The number of samples to transmit
+        """
+        return RadarTransmitter(self, **kwargs)
 
 
 class LinearFMWaveform(RadarWaveform):
@@ -82,13 +92,6 @@ class LinearFMWaveform(RadarWaveform):
         self.sampRate = sampRate
 
     def sample(self):
-        """
-        Generate a sampled version of this waveform
-
-        Parameters
-        ----------
-          - self: The LFM object to generate
-        """
         data = np.zeros((round(self.sampRate*self.pulsewidth)),
                         dtype=np.complex64)
         Ts = 1 / self.sampRate
@@ -99,18 +102,42 @@ class LinearFMWaveform(RadarWaveform):
         return data
 
 
+class SquareWaveform(RadarWaveform):
+    """
+    Defines a square waveform
+
+    Parameters
+    ----------
+      - pulsewidth: The time duration of the waveform (s)
+      - sampRate: The sampling rate of the waveform (Hz)
+    """
+
+    def __init__(self, pulsewidth, sampRate):
+        super().__init__()
+        # Define metadata
+        self.detail.type = 'digital'
+        self.detail.modulation = 'ask'
+        self.label = 'Square'
+        # Define waveform parameters
+        self.pulsewidth = pulsewidth
+        self.sampRate = sampRate
+        self.bandwidth = 1 / self.pulsewidth
+
+    def sample(self):
+        nSamps = round(self.sampRate*self.pulsewidth)
+        return np.ones((nSamps,), dtype=np.complex64)
+
+
 if __name__ == '__main__':
     bandwidth = 1e6
     pulsewidth = 100e-6
     sampRate = 1e6
-    lfm = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
+    wave = LinearFMWaveform(bandwidth, pulsewidth, sampRate)
     # Generate the flowgraph
     tb = gr.top_block()
-    tx = lfm.transmitter(name='RadarTransmitter',nSamps=int(sampRate*pulsewidth))
-    # tx = RadarTransmitter(lfm,nSamps=int(sampRate*pulsewidth))
+    tx = wave.transmitter()
     sink = blocks.vector_sink_c()
-    tb.connect(tx,sink)
+    tb.connect(tx, sink)
     tb.run()
     plt.plot(np.real(sink.data()))
     plt.show()
-    
