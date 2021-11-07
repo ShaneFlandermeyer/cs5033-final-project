@@ -1,0 +1,3 @@
+[submodule "SigMF"]
+	path = SigMF
+	url = git@github.com:ShaneFlandermeyer/SigMF.git
