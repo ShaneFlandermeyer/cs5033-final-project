@@ -76,25 +76,13 @@ class psk(CommunicationsWaveform):
         self.detail.type = "digital"
         self.detail.modulation = "psk"
         self.detail.order = order
-        # Constellation object
-        if order == 2:
-            self.label = "BPSK"
-            self.constellation = digital.constellation_bpsk()
-        elif order == 4:
-            self.label = "QPSK"
-            self.constellation = digital.constellation_qpsk()
-        elif order == 8:
-            self.label = "8PSK"
-            self.constellation = digital.constellation_8psk()
-        else:
-            raise ValueError(
-                "Object currently only supports BPSK, QPSK, and 8PSK")
 
 
 class qam(CommunicationsWaveform):
     """
     Object representing a quadratum amplitude modulation (QAM) constellation.
     """
+
     def __init__(self, order, **kwargs):
         CommunicationsWaveform.__init__(self, **kwargs)
         # Metadata
@@ -106,11 +94,10 @@ class qam(CommunicationsWaveform):
             self.constellation = digital.constellation_16qam()
 
 
-class bpsk(CommunicationsWaveform):
+class bpsk(psk):
     """
     Object representing a binary phase shift keying (BPSK) constellation.
     """
-
     def __init__(self, **kwargs):
         psk.__init__(self, order=2, **kwargs)
         self.label = "BPSK"
@@ -123,3 +110,7 @@ class qpsk(CommunicationsWaveform):
         """
         psk.__init__(self, order=4, **kwargs)
         self.label = "QPSK"
+
+
+if __name__ == '__main__':
+    bpsk = bpsk()
