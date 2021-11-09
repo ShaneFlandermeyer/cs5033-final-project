@@ -51,7 +51,7 @@ class CommunicationsWaveform():
     """
     DETAIL_KEY = "signal:detail"
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.detail = detail()
 
     def transmitter(self, **kwargs):
@@ -101,6 +101,7 @@ class bpsk(psk):
     def __init__(self, **kwargs):
         psk.__init__(self, order=2, **kwargs)
         self.label = "BPSK"
+        self.constellation = digital.constellation_bpsk()
 
 
 class qpsk(CommunicationsWaveform):
@@ -110,6 +111,7 @@ class qpsk(CommunicationsWaveform):
         """
         psk.__init__(self, order=4, **kwargs)
         self.label = "QPSK"
+        self.constellation = digital.constellation_qpsk()
 
 
 if __name__ == '__main__':
