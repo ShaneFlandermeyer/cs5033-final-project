@@ -7,6 +7,13 @@ class CommunicationsTransmitter(gr.hier_block2):
     """
     A class used for propagating communications signals through a Python-based
     GNU Radio flowgraph
+
+    Parameters:
+    -----------
+        - waveform: The CommunicationsWaveform object to transmit
+        - src: The data bits to modulate
+        - repeat: If true, repeats the waveform until the flowgraph is stopped
+        - name: The name of the transmitter object
     """
 
     def __init__(self, waveform, src=None, repeat=False, name='CommunicationsTransmitter', **kwargs):
@@ -20,7 +27,6 @@ class CommunicationsTransmitter(gr.hier_block2):
             # Use a user-defined source block
             self.data = src
         # Create a modulator object from the waveform constellation
-        # TODO: This should probably be done in the waveform classes
         self.modulator = digital.generic_mod(
             constellation=waveform.constellation,
             differential=waveform.differential,
@@ -48,6 +54,9 @@ class CommunicationsWaveform():
 
     Parameters
     ----------
+        - differential: If true, the signal uses differential encoding
+        - sps: Samples per symbol (should be >= 2, but this isn't enforced)
+        - excessBandwidth: The bandwidth of the root-raised cosine filter beyond the Nyquist bandwidth
     """
     DETAIL_KEY = "signal:detail"
 
@@ -69,8 +78,11 @@ class CommunicationsWaveform():
 
 class psk(CommunicationsWaveform):
     """
-    Object representing a general phase shift keying (PSK) constellation. The
-    modulation order can be any power of 2
+    Object representing a general phase shift keying (PSK) constellation. 
+
+    Parameters
+    ----------
+        - order: The order of the PSK constellation. This must be a power of 2
     """
 
     def __init__(self, order, **kwargs):
@@ -84,6 +96,10 @@ class psk(CommunicationsWaveform):
 class qam(CommunicationsWaveform):
     """
     Object representing a quadratum amplitude modulation (QAM) constellation.
+
+    Parameters
+    ----------
+        - order: The order of the QAM constellation. This must be a power of 2
     """
 
     def __init__(self, order, **kwargs):
@@ -99,8 +115,9 @@ class qam(CommunicationsWaveform):
 
 class bpsk(psk):
     """
-    Object representing a binary phase shift keying (BPSK) constellation.
+    Object representing a binary phase shift keying (BPSK) constellation. 
     """
+
     def __init__(self, **kwargs):
         psk.__init__(self, order=2, **kwargs)
         self.label = "BPSK"
