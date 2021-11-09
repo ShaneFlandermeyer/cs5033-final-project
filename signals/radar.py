@@ -24,18 +24,26 @@ class RadarTransmitter(gr.hier_block2):
       gr.hier_block2.__init__(self, name,
                               gr.io_signature(0, 0, 0),
                               gr.io_signature(1, 1, gr.sizeof_gr_complex))
-      self.src = blocks.vector_source_c(waveform.sample(), repeat)
+      self.data = waveform.sample()
+      self.repeat = repeat
+      self.src = blocks.vector_source_c(self.data, repeat)
       if nSamps is None:
+        self.head = None
         self.connect(self.src,self)
       else:
         self.head = blocks.head(gr.sizeof_gr_complex, nSamps)
         self.connect(self.src, self.head, self)
 
+    def set_data(self,data):
+      self.data = data
+      self.src.set_data(data)
+
     def reset(self):
         """
         Reset the counter on the internal head block
         """
-        self.head.reset()
+        if self.head is not None:
+          self.head.reset()
 
 
 class RadarWaveform():
@@ -147,5 +155,10 @@ if __name__ == '__main__':
     sink=blocks.vector_sink_c()
     tb.connect(tx, sink)
     tb.run()
-    plt.plot(np.real(sink.data()))
+    wave.sampRate *= 2
+    tx.set_data(wave.sample())
+    sink.reset()
+    tb.run()
+    result = sink.data()
+    plt.plot(result)
     plt.show()
