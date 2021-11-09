@@ -49,7 +49,6 @@ class RadarTransmitter(gr.hier_block2):
 class RadarWaveform():
     """
     An abstract parent class for all radar waveform objects
-    # TODO: For now, assuming these object are immutable
     Parameters
     ----------
 
