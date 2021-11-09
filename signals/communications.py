@@ -23,10 +23,10 @@ class CommunicationsTransmitter(gr.hier_block2):
         # TODO: This should probably be done in the waveform classes
         self.modulator = digital.generic_mod(
             constellation=waveform.constellation,
-            differential=False,
-            samples_per_symbol=2,
+            differential=waveform.differential,
+            samples_per_symbol=waveform.sampsPerSym,
             pre_diff_code=True,
-            excess_bw=0.35,
+            excess_bw=waveform.excessBandwidth,
             verbose=False,
             log=False,
             truncate=False)
@@ -51,7 +51,10 @@ class CommunicationsWaveform():
     """
     DETAIL_KEY = "signal:detail"
 
-    def __init__(self, **kwargs):
+    def __init__(self, differential=False, sps=2, excessBandwidth=0.35, **kwargs):
+        self.differential = differential
+        self.sampsPerSym = sps
+        self.excessBandwidth = excessBandwidth
         self.detail = detail()
 
     def transmitter(self, **kwargs):
@@ -112,7 +115,3 @@ class qpsk(CommunicationsWaveform):
         psk.__init__(self, order=4, **kwargs)
         self.label = "QPSK"
         self.constellation = digital.constellation_qpsk()
-
-
-if __name__ == '__main__':
-    bpsk = bpsk()
