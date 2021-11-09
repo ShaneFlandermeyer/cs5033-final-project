@@ -20,15 +20,16 @@ class RadarTransmitter(gr.hier_block2):
       - TODO: Add a pulse repetition frequency (PRF) parameter
     """
 
-    def __init__(self, waveform, name='RadarTransmitter', nSamps=None):
+    def __init__(self, waveform, name='RadarTransmitter', repeat=False, nSamps=None):
       gr.hier_block2.__init__(self, name,
                               gr.io_signature(0, 0, 0),
                               gr.io_signature(1, 1, gr.sizeof_gr_complex))
-      self.src = blocks.vector_source_c(waveform.sample(), True)
+      self.src = blocks.vector_source_c(waveform.sample(), repeat)
       if nSamps is None:
-        nSamps = len(waveform.sample())
-      self.head = blocks.head(gr.sizeof_gr_complex, nSamps)
-      self.connect(self.src, self.head, self)
+        self.connect(self.src,self)
+      else:
+        self.head = blocks.head(gr.sizeof_gr_complex, nSamps)
+        self.connect(self.src, self.head, self)
 
     def reset(self):
         """
