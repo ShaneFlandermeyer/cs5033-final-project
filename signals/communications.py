@@ -91,6 +91,18 @@ class psk(CommunicationsWaveform):
                 "Object currently only supports BPSK, QPSK, and 8PSK")
 
 
+class qam(CommunicationsWaveform):
+    def __init__(self, order, **kwargs):
+        CommunicationsWaveform.__init__(self)
+        # Metadata
+        self.detail.type = "digital"
+        self.detail.modulation = "qam"
+        self.detail.order = order
+        if order == 16:
+            self.label = "16QAM"
+            self.constellation = digital.constellation_16qam()
+
+
 class bpsk(CommunicationsWaveform):
     """
     Object representing a binary phase shift keying (BPSK) constellation.
