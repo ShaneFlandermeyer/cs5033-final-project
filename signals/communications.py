@@ -71,7 +71,7 @@ class psk(CommunicationsWaveform):
     """
 
     def __init__(self, order, **kwargs):
-        CommunicationsWaveform.__init__(self)
+        CommunicationsWaveform.__init__(self, **kwargs)
         # Metadata
         self.detail.type = "digital"
         self.detail.modulation = "psk"
@@ -92,8 +92,11 @@ class psk(CommunicationsWaveform):
 
 
 class qam(CommunicationsWaveform):
+    """
+    Object representing a quadratum amplitude modulation (QAM) constellation.
+    """
     def __init__(self, order, **kwargs):
-        CommunicationsWaveform.__init__(self)
+        CommunicationsWaveform.__init__(self, **kwargs)
         # Metadata
         self.detail.type = "digital"
         self.detail.modulation = "qam"
@@ -109,7 +112,7 @@ class bpsk(CommunicationsWaveform):
     """
 
     def __init__(self, **kwargs):
-        psk.__init__(self, order=2)
+        psk.__init__(self, order=2, **kwargs)
         self.label = "BPSK"
 
 
@@ -118,5 +121,5 @@ class qpsk(CommunicationsWaveform):
         """
         Object representing a quadrature phase shift keying (QPSK) constellation.
         """
-        psk.__init__(self, order=4)
+        psk.__init__(self, order=4, **kwargs)
         self.label = "QPSK"
