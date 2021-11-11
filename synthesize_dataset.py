@@ -130,11 +130,11 @@ for snr in snrs:
             # Save off the data and corresponding metadata
             # TODO: This gets slow when we try to generate lots of data
             detail = sig.detail
+            sig.detail.snr = str(snr)
             metaDict = {
                 SigMFFile.LABEL_KEY: sig.label,
                 # TODO: This is horrible from a metadata perspective, but for
                 # now the SNR will live in the comment field
-                SigMFFile.COMMENT_KEY: str(snr),
                 SigMFFile.DATETIME_KEY: dt.datetime.utcnow().isoformat()+'Z'}
             metaDict[sig.DETAIL_KEY] = detail.dict()
             meta.add_annotation(nSampsProduced, len(result), metadata=metaDict)
