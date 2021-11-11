@@ -23,13 +23,13 @@ from tqdm import tqdm
 
 # %%
 # Number of vectors per modulation class
-nVecClass = 1
+nVecClass = 100
 # Number of samples per class vector
 nSampsVec = 128
 # Loop through all the waveform types defined in this list
 np.random.seed(0)
-# waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
-waveforms = [LinearFMWaveform]
+waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
+# waveforms = [LinearFMWaveform]
 # SNRs to simulate
 snrs = np.arange(-20, 20, 2)
 nClasses = len(waveforms)
@@ -96,6 +96,7 @@ for snr in snrs:
     noise_voltage = 10**(-snr/20)
     channel = channels.dynamic_channel_model(
         sampRate, 0.01, 50, .01, 0.5e3, 8, doppFreq, True, 4, delays, mags, nTaps, noise_voltage, 0x1337)
+    print(f'Simulating SNR = {snr}')
     for wave in tqdm(waveforms):
         # Flowgraph
         tb = gr.top_block()
