@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 # %%
 # Number of vectors per modulation class
-nVecClass = 100
+nVecClass = 500
 # Number of samples per class vector
 nSampsVec = 128
 # Loop through all the waveform types defined in this list
@@ -31,7 +31,7 @@ np.random.seed(0)
 waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
 # waveforms = [LinearFMWaveform]
 # SNRs to simulate
-snrs = np.arange(-20, 20, 2)
+snrs = np.arange(-20, 22, 2)
 nClasses = len(waveforms)
 nSampsTotal = nSampsVec*nVecClass*nClasses*len(snrs)
 data = np.zeros((nSampsTotal,), dtype=np.complex64)
@@ -134,8 +134,6 @@ for snr in snrs:
             sig.detail.snr = str(snr)
             metaDict = {
                 SigMFFile.LABEL_KEY: sig.label,
-                # TODO: This is horrible from a metadata perspective, but for
-                # now the SNR will live in the comment field
                 SigMFFile.DATETIME_KEY: dt.datetime.utcnow().isoformat()+'Z'}
             metaDict[sig.DETAIL_KEY] = detail.dict()
             meta.add_annotation(nSampsProduced, len(result), metadata=metaDict)
