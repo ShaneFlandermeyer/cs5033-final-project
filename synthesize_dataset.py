@@ -16,14 +16,17 @@ from tqdm import tqdm
 
 # %%
 # Number of vectors per modulation class
-nVecClass = 1000
+nVecClass = 1
 # Number of samples per class vector
 nSampsVec = 128
 # Loop through all the waveform types defined in this list
 np.random.seed(0)
-waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
+# waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
+waveforms = [LinearFMWaveform]
+# SNRs to simulate
+snrs = np.arange(-20,20,2)
 nClasses = len(waveforms)
-nSampsTotal = nSampsVec*nVecClass*nClasses
+nSampsTotal = nSampsVec*nVecClass*nClasses*len(snrs)
 data = np.zeros((nSampsTotal,), dtype=np.complex64)
 nSampsProduced = 0
 
@@ -80,55 +83,56 @@ pulsewidth = minPulsewidth + np.random.rand(nVecClass)*(maxPulsewidth-minPulsewi
 # ## Main Simulation Loop
 
 # %%
-for wave in waveforms:
-    # Flowgraph
-    tb = gr.top_block()
-    # Create signal object and associated transmitter
-    if callable(wave):
-        sig = wave(bandwidth=bandwidth[0],
-                pulsewidth=pulsewidth[0], sampRate=sampRate)
-    else:
-        sig = wave
-    tx = sig.transmitter(repeat=False)
-    # Random SNR from -20 to 20 dB
-    # TODO: Create a channel model block
-    snr = np.random.rand()*40-20
-    noise_voltage = 10**(-snr/10)
+for snr in snrs:
+    noise_voltage = 10**(-snr/20)
     channel = channels.dynamic_channel_model(
-    sampRate, 0.01, 50, .01, 0.5e3, 8, doppFreq, True, 4, delays, mags, nTaps, noise_voltage, 0x1337)
-    sink = blocks.vector_sink_c()
-    # Create the flowgraph
-    if useChannelModel:
-        tb.connect(tx,channel,sink)
-    else:
-        tb.connect(tx,sink)
-    # Generate nVecClass vectors of nSampsVec samples each
-    for iVec in tqdm(range(nVecClass)):
-        if isinstance(sig,RadarWaveform):
-            # Create signal object and associated transmitter
-            sig.bandwidth = bandwidth[iVec]
-            sig.pulsewidth = pulsewidth[iVec]
-            tx.set_data(sig.sample())
-        # Run the simulation
-        tb.run()
-        # Choose a random subset of the data to add to the dataset. This ensures
-        # that the model will get a broader variety of signals than if we saved
-        # a fixed part of each signal
-        startIdx = np.random.randint(0, len(sink.data())-nSampsVec)
-        result = np.array(
-            sink.data()[startIdx:startIdx+nSampsVec], dtype=np.complex64)
-        # Save off the data and corresponding metadata
-        # TODO: This gets slow when we try to generate lots of data
-        detail = sig.detail
-        metaDict = {
-            SigMFFile.LABEL_KEY: sig.label,
-            SigMFFile.DATETIME_KEY: dt.datetime.utcnow().isoformat()+'Z'}
-        metaDict[sig.DETAIL_KEY] = detail.dict()
-        meta.add_annotation(nSampsProduced, len(result), metadata=metaDict)
-        # Normalize the energy to stay consistent with different modulations
-        energy = np.sum(np.abs(result)**2)
-        data[nSampsProduced:nSampsProduced+nSampsVec] = result/energy
-        nSampsProduced += nSampsVec
+        sampRate, 0.01, 50, .01, 0.5e3, 8, doppFreq, True, 4, delays, mags, nTaps, noise_voltage, 0x1337)
+    for wave in tqdm(waveforms):
+        # Flowgraph
+        tb = gr.top_block()
+        # Create signal object and associated transmitter
+        if callable(wave):
+            sig = wave(bandwidth=bandwidth[0],
+                    pulsewidth=pulsewidth[0], sampRate=sampRate)
+        else:
+            sig = wave
+        tx = sig.transmitter(repeat=False)
+        sink = blocks.vector_sink_c()
+        # Create the flowgraph
+        if useChannelModel:
+            tb.connect(tx,channel,sink)
+        else:
+            tb.connect(tx,sink)
+        # Generate nVecClass vectors of nSampsVec samples each
+        for iVec in range(nVecClass):
+            if isinstance(sig,RadarWaveform):
+                # Create signal object and associated transmitter
+                sig.bandwidth = bandwidth[iVec]
+                sig.pulsewidth = pulsewidth[iVec]
+                tx.set_data(sig.sample())
+            # Run the simulation
+            tb.run()
+            # Choose a random subset of the data to add to the dataset. This ensures
+            # that the model will get a broader variety of signals than if we saved
+            # a fixed part of each signal
+            startIdx = np.random.randint(0, len(sink.data())-nSampsVec)
+            result = np.array(
+                sink.data()[startIdx:startIdx+nSampsVec], dtype=np.complex64)
+            # Save off the data and corresponding metadata
+            # TODO: This gets slow when we try to generate lots of data
+            detail = sig.detail
+            metaDict = {
+                SigMFFile.LABEL_KEY: sig.label,
+                # TODO: This is horrible from a metadata perspective, but for
+                # now the SNR will live in the comment field
+                SigMFFile.COMMENT_KEY: str(snr),
+                SigMFFile.DATETIME_KEY: dt.datetime.utcnow().isoformat()+'Z'}
+            metaDict[sig.DETAIL_KEY] = detail.dict()
+            meta.add_annotation(nSampsProduced, len(result), metadata=metaDict)
+            # Normalize the energy to stay consistent with different modulations
+            energy = np.sum(np.abs(result)**2)
+            data[nSampsProduced:nSampsProduced+nSampsVec] = result/energy
+            nSampsProduced += nSampsVec
         
 # Check for mistakes and write to file
 data.tofile(dataDir+filename+'.sigmf-data')
