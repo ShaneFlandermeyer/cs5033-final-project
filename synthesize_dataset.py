@@ -4,12 +4,19 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from gnuradio import channels, gr, blocks, analog, digital
 import datetime as dt
-import random,time
+import random
+import time
 import sigmf
 from sigmf import SigMFFile, sigmffile, utils
 from signals.communications import *
-from signals.radar import * 
+from signals.radar import *
 from tqdm import tqdm
+
+# %% [markdown]
+# ## Wishlist
+# - Implement loop over different SNR values
+# - Create a new channel model block
+# - Parallelize everything
 
 # %% [markdown]
 # ## Data Processing Parameters
@@ -24,7 +31,7 @@ np.random.seed(0)
 # waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
 waveforms = [LinearFMWaveform]
 # SNRs to simulate
-snrs = np.arange(-20,20,2)
+snrs = np.arange(-20, 20, 2)
 nClasses = len(waveforms)
 nSampsTotal = nSampsVec*nVecClass*nClasses*len(snrs)
 data = np.zeros((nSampsTotal,), dtype=np.complex64)
@@ -76,8 +83,10 @@ minBandwidth = 1e6
 maxBandwidth = 100e6
 minPulsewidth = 1e-6
 maxPulsewidth = 100e-6
-bandwidth = minBandwidth + np.random.rand(nVecClass)*(maxBandwidth-minBandwidth)
-pulsewidth = minPulsewidth + np.random.rand(nVecClass)*(maxPulsewidth-minPulsewidth)
+bandwidth = minBandwidth + \
+    np.random.rand(nVecClass)*(maxBandwidth-minBandwidth)
+pulsewidth = minPulsewidth + \
+    np.random.rand(nVecClass)*(maxPulsewidth-minPulsewidth)
 
 # %% [markdown]
 # ## Main Simulation Loop
@@ -93,19 +102,19 @@ for snr in snrs:
         # Create signal object and associated transmitter
         if callable(wave):
             sig = wave(bandwidth=bandwidth[0],
-                    pulsewidth=pulsewidth[0], sampRate=sampRate)
+                       pulsewidth=pulsewidth[0], sampRate=sampRate)
         else:
             sig = wave
         tx = sig.transmitter(repeat=False)
         sink = blocks.vector_sink_c()
         # Create the flowgraph
         if useChannelModel:
-            tb.connect(tx,channel,sink)
+            tb.connect(tx, channel, sink)
         else:
-            tb.connect(tx,sink)
+            tb.connect(tx, sink)
         # Generate nVecClass vectors of nSampsVec samples each
         for iVec in range(nVecClass):
-            if isinstance(sig,RadarWaveform):
+            if isinstance(sig, RadarWaveform):
                 # Create signal object and associated transmitter
                 sig.bandwidth = bandwidth[iVec]
                 sig.pulsewidth = pulsewidth[iVec]
@@ -133,11 +142,9 @@ for snr in snrs:
             energy = np.sum(np.abs(result)**2)
             data[nSampsProduced:nSampsProduced+nSampsVec] = result/energy
             nSampsProduced += nSampsVec
-        
+
 # Check for mistakes and write to file
 data.tofile(dataDir+filename+'.sigmf-data')
 assert meta.validate()
 # Write metadata to file
 meta.tofile(dataDir+filename)
-
-
