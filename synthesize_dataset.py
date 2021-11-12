@@ -23,15 +23,15 @@ from tqdm import tqdm
 
 # %%
 # Number of vectors per modulation class
-nVecClass = 500
+nVecClass = 1000
 # Number of samples per class vector
 nSampsVec = 128
 # Loop through all the waveform types defined in this list
 np.random.seed(0)
 waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
-# waveforms = [LinearFMWaveform]
+# waveforms = [qam(16)]
 # SNRs to simulate
-snrs = np.arange(-20, 22, 2)
+snrs = np.arange(-20,22,4)
 nClasses = len(waveforms)
 nSampsTotal = nSampsVec*nVecClass*nClasses*len(snrs)
 data = np.zeros((nSampsTotal,), dtype=np.complex64)
@@ -64,10 +64,6 @@ meta = SigMFFile(
     }
 )
 # Channel parameters
-# Signal-to-noise ration (dB)
-# These values are uniformly distributed between -20 and 20
-snr = np.random.rand(nVecClass)*40-20
-noise_voltage = 10**(-snr/20)
 # Maximum doppler frequency used in channel fading simulation
 doppFreq = 1
 # Fractional sample delays in the power delay profile
@@ -76,8 +72,6 @@ delays = [0.0, 0.9, 1.7]
 mags = [1, 0.8, 0.3]
 # Length of the filter to interpolate the power delay profile over
 nTaps = 8
-# If true, the channel described by the parameters above will be simulatred
-useChannelModel = True
 # Waveform parameters
 minBandwidth = 1e6
 maxBandwidth = 100e6
@@ -109,10 +103,7 @@ for snr in snrs:
         tx = sig.transmitter(repeat=False)
         sink = blocks.vector_sink_c()
         # Create the flowgraph
-        if useChannelModel:
-            tb.connect(tx, channel, sink)
-        else:
-            tb.connect(tx, sink)
+        tb.connect(tx, channel, sink)
         # Generate nVecClass vectors of nSampsVec samples each
         for iVec in range(nVecClass):
             if isinstance(sig, RadarWaveform):
