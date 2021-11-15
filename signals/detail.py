@@ -18,6 +18,8 @@ class detail():
     BANDIWDTH_KEY = "bandwidth"
     CHANNEL_KEY = "channel"
     CLASS_VARIANT_KEY = "class_variant"
+    # TODO: This is not a part of the signal extension spec
+    SNR_KEY = "snr"
     def __init__(self):
         self.type = None
         self.modulation = None
@@ -31,6 +33,7 @@ class detail():
         self.bandwidth = None
         self.channel = None
         self.class_variant = None
+        self.snr = None
 
     def dict(self):
         """
