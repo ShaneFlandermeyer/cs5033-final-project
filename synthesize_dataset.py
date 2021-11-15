@@ -11,7 +11,6 @@ from sigmf import SigMFFile, sigmffile, utils
 from signals.communications import *
 from signals.radar import *
 from tqdm import tqdm
-import signals.channel
 
 # %% [markdown]
 # ## Wishlist
@@ -24,18 +23,17 @@ import signals.channel
 
 # %%
 # Number of vectors per modulation class
-nVecClass = 1000
+nVecClass = 500
 # Number of samples per class vector
 nSampsVec = 128
 # Loop through all the waveform types defined in this list
 np.random.seed(0)
 waveforms = [LinearFMWaveform, SquareWaveform, bpsk, qpsk, qam(16)]
 # waveforms = [qam(16)]
-# Noise powers to simulate
-noisePower = np.arange(-20, 22, 8)
-# noisePower = [-20]
+# SNRs to simulate
+snrs = np.arange(-20,22,8)
 nClasses = len(waveforms)
-nSampsTotal = nSampsVec*nVecClass*nClasses*len(noisePower)
+nSampsTotal = nSampsVec*nVecClass*nClasses*len(snrs)
 data = np.zeros((nSampsTotal,), dtype=np.complex64)
 nSampsProduced = 0
 
@@ -88,13 +86,11 @@ pulsewidth = minPulsewidth + \
 # ## Main Simulation Loop
 
 # %%
-for power in noisePower:
-    noise_voltage = 10**(power/10)
-    channel = signals.channel.Channel(
-        sampRate, 8, doppFreq, True, 4, delays, mags, nTaps, power, 0x1337)
-    # channel = channels.dynamic_channel_model(
-    #     sampRate, 0.01, 50, .01, 0.5e3, 8, doppFreq, True, 4, delays, mags, nTaps, noise_voltage, 0x1337)
-    print(f'Simulating noise power = {power} dB')
+for snr in snrs:
+    noise_voltage = 10**(-snr/20)
+    channel = channels.dynamic_channel_model(
+        sampRate, 0.01, 50, .01, 0.5e3, 8, doppFreq, True, 4, delays, mags, nTaps, noise_voltage, 0x1337)
+    print(f'Simulating SNR = {snr}')
     for wave in tqdm(waveforms):
         # Flowgraph
         tb = gr.top_block()
@@ -126,7 +122,7 @@ for power in noisePower:
             # Save off the data and corresponding metadata
             # TODO: This gets slow when we try to generate lots of data
             detail = sig.detail
-            sig.detail.snr = str(power)
+            sig.detail.snr = str(snr)
             metaDict = {
                 SigMFFile.LABEL_KEY: sig.label,
                 SigMFFile.DATETIME_KEY: dt.datetime.utcnow().isoformat()+'Z'}
