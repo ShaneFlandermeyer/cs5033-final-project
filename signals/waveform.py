@@ -243,6 +243,42 @@ class psk(CommunicationsWaveform):
         self.detail.type = "digital"
         self.detail.modulation = "psk"
         self.detail.order = order
+        self.label = str(order) + 'PSK'
+        # TODO: I need a smarter way to handle constellation definitions
+        if order == 8:
+            self.constellation = digital.constellation_8psk()
+
+
+class bpsk(psk):
+    """
+    Object representing a binary phase shift keying (BPSK) constellation. 
+    """
+
+    def __init__(self, **kwargs):
+        psk.__init__(self, order=2, **kwargs)
+        self.label = "BPSK"
+        self.constellation = digital.constellation_bpsk()
+
+
+class psk8(psk):
+    """
+    Object representing an 8PSK constellation. 
+    """
+
+    def __init__(self, **kwargs):
+        psk.__init__(self, order=8, **kwargs)
+        self.label = "8PSK"
+        self.constellation = digital.constellation_8psk()
+
+
+class qpsk(CommunicationsWaveform):
+    def __init__(self, **kwargs):
+        """
+        Object representing a quadrature phase shift keying (QPSK) constellation.
+        """
+        psk.__init__(self, order=4, **kwargs)
+        self.label = "QPSK"
+        self.constellation = digital.constellation_qpsk()
 
 
 class qam(CommunicationsWaveform):
@@ -260,27 +296,14 @@ class qam(CommunicationsWaveform):
         self.detail.type = "digital"
         self.detail.modulation = "qam"
         self.detail.order = order
-        if order == 16:
-            self.label = "16QAM"
-            self.constellation = digital.constellation_16qam()
 
 
-class bpsk(psk):
+class qam16(qam):
     """
-    Object representing a binary phase shift keying (BPSK) constellation. 
+    Object representing a 16-QAM
     """
 
     def __init__(self, **kwargs):
-        psk.__init__(self, order=2, **kwargs)
-        self.label = "BPSK"
-        self.constellation = digital.constellation_bpsk()
-
-
-class qpsk(CommunicationsWaveform):
-    def __init__(self, **kwargs):
-        """
-        Object representing a quadrature phase shift keying (QPSK) constellation.
-        """
-        psk.__init__(self, order=4, **kwargs)
-        self.label = "QPSK"
-        self.constellation = digital.constellation_qpsk()
+        qam.__init__(self, order=16, **kwargs)
+        self.label = "16QAM"
+        self.constellation = digital.constellation_16qam()
