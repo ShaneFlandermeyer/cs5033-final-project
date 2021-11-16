@@ -4,8 +4,10 @@ from gnuradio import gr, blocks, analog, digital
 from signals.detail import detail
 
 ###############################################################################
-### Radar Waveforms
+# Radar Waveforms
 ###############################################################################
+
+
 class RadarTransmitter(gr.hier_block2):
     """
     A class used for propagating signals from a waveform object through a GNU
@@ -14,27 +16,37 @@ class RadarTransmitter(gr.hier_block2):
     Parameters
     ----------
       - waveform: The waveform object to transmit
-                  TODO: Allow this to be an array of samples
       - name: The name of the hierarchicial block
               Default: 'RadarTransmitter'
-      - TODO: Add a pulse repetition frequency (PRF) parameter
+      - repeat: If true, the waveform is transmitted repeatedly until the
+        flowgraph is stopped (either manually or by some other block)
     """
 
     def __init__(self, waveform, name='RadarTransmitter', repeat=False, nSamps=None):
         gr.hier_block2.__init__(self, name,
                                 gr.io_signature(0, 0, 0),
                                 gr.io_signature(1, 1, gr.sizeof_gr_complex))
+        # Data samples to transmit
         self.data = waveform.sample()
         self.repeat = repeat
         self.src = blocks.vector_source_c(self.data, repeat)
         if nSamps is None:
+          # Transmit continuously
             self.head = None
             self.connect(self.src, self)
         else:
+          # Stop transmitting after nSamps samples
             self.head = blocks.head(gr.sizeof_gr_complex, nSamps)
             self.connect(self.src, self.head, self)
 
     def set_data(self, data):
+        """
+        Change the transmitted data without creating a new object
+
+        Parameters
+        ----------
+        - data: The new data vector to transmit
+        """
         self.data = data
         self.src.set_data(data)
 
@@ -91,7 +103,6 @@ class LinearFMWaveform(RadarWaveform):
       - bandwidth: The sweep bandwidth of the waveform (Hz)
       - pulsewidth: The time duration of the waveform (s)
       - sampRate: The sample rate of the waveform (Hz)
-                  TODO: Would be ideal to move this to the sample() method
     """
 
     def __init__(self, bandwidth, pulsewidth, sampRate, **kwargs):
@@ -143,7 +154,7 @@ class SquareWaveform(RadarWaveform):
         return np.ones((nSamps,), dtype=np.complex64)
 
 ###############################################################################
-### Communications waveforms
+# Communications waveforms
 ###############################################################################
 
 
@@ -213,9 +224,6 @@ class CommunicationsWaveform():
     def transmitter(self, **kwargs):
         """
         Return a CommunicationsTransmitter object that will transmit this waveform
-
-        Parameters:
-        -----------
         """
         return CommunicationsTransmitter(self, **kwargs)
 
