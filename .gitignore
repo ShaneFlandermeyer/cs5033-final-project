@@ -6,3 +6,4 @@ examples/grc/*.py
 *.bak
 data/
 figures/
+logs/
