@@ -10,6 +10,7 @@ matplotlib = "*"
 tensorflow = "*"
 keras = "*"
 notebook = "*"
+pydot = "*"
 
 [dev-packages]
 notebook = "*"
