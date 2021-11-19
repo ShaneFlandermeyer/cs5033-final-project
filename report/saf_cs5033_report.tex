@@ -68,7 +68,7 @@ described in \cite{OShea2016a}.
 
 \begin{figure*}
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.475\textwidth}
         \centering
         \includegraphics[width=\textwidth]{sro.png}
         \caption[]%
@@ -76,7 +76,7 @@ described in \cite{OShea2016a}.
         \label{fig:sro}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}  
+    \begin{subfigure}[b]{0.475\textwidth}  
         \centering 
         \includegraphics[width=\textwidth]{cfo.png}
         \caption[]%
@@ -84,7 +84,7 @@ described in \cite{OShea2016a}.
         \label{fig:cfo}
     \end{subfigure}
     \vskip\baselineskip
-    \begin{subfigure}[b]{0.45\textwidth}   
+    \begin{subfigure}[b]{0.475\textwidth}   
         \centering 
         \includegraphics[width=\textwidth]{fading.png}
         \caption[]%
@@ -92,12 +92,12 @@ described in \cite{OShea2016a}.
         \label{fig:fading}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}   
+    \begin{subfigure}[b]{0.475\textwidth}   
         \centering 
         \includegraphics[width=\textwidth]{awgn.png}
         \caption[]%
         {{\small Additive White Gaussian Noise}}    
-        \label{fig:mean and std of net44}
+        \label{fig:awgn}
     \end{subfigure}
     \caption[]
     {} 
@@ -112,7 +112,7 @@ described in \cite{OShea2016a}.
     \centering
     \includegraphics[width=\linewidth]{waveforms.png}
     \caption{Waveforms used for Experiment}
-    \label{fig: Waveforms used for Experiment}
+    \label{fig:waveforms}
 \end{figure}
 
 
@@ -129,6 +129,40 @@ data; how to choose hyper-parameters; how
 to evaluate model performance (accuracy/f1/AUC).
 
 \subsection{Results and Discussion}
+
+\begin{figure}[H]
+    % TODO: Replace these placeholder figures
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{waveforms.png}
+        \caption{Noise Voltage = 20 dB}
+        \label{fig:noise voltage = 20 dB}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{waveforms.png}
+        \caption{Noise Voltage = -$\infty$ dB}
+        \label{fig:noise voltage = 0}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{waveforms.png}
+        \caption{Full Test Set}
+        \label{fig:full test set}
+    \end{subfigure}
+       \caption{Confusion Matrices}
+       \label{fig:confusion}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\linewidth]{classification-accuracy.png}
+    \caption{Classification Accuracy vs SNR}
+    \label{fig:classification accuracy}
+\end{figure}
 
 Present your experimental results and discuss
 the results (e.g. what can we learn from the
