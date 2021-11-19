@@ -1,14 +1,24 @@
-*~
-*.pyc
-*.pyo
+# Subdirectories
+data/
+figures/
+logs/
 build*/
 examples/grc/*.py
+
+# Latex
 *.bak
 *.fls
 *.log
 *.synctex.gz
 *.aux
 *.fdb_latexmk
-data/
-figures/
-logs/
+*.bbl
+*.blg
+
+# Python stuff
+*~
+*.pyc
+*.pyo
+
+
+

@@ -1,13 +1,15 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \usepackage[margin=1in]{geometry}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{.5em}
 
-\title{4033/5033: Final Project Report (4 Page)}
-\author{Your Name}
+\title{CS 5033: Final Project Report}
+\author{Shane Flandermeyer}
 \date{}
 
 \begin{document}
@@ -16,44 +18,65 @@
 
 \section{Introduction}
 
-Describe your research problem, 
-including background, related work, etc. 
+% Describe your research problem, 
+% including background, related work, etc. 
 
-overview your proposed study, e.g. 
-implement an algorithm and evaluate 
-its performance; apply ML to a new 
-application problem and evaluate its 
-performance. 
+% overview your proposed study, e.g. 
+% implement an algorithm and evaluate 
+% its performance; apply ML to a new 
+% application problem and evaluate its 
+% performance. 
+
+The rapid evolution of wireless communications technologies such as 4G/5G and the internet-of-things (IoT)
+has radically altered daily life. These technologies utilize the radio frequency (RF) portion of the electro-
+magnetic spectrum, which is a finite resource. To effectively access and regulate the spectrum, it is essential
+that the next generation of wireless devices be able to rapidly classify and monitor signals in the spectrum.
+Information gained from sensing the spectrum can be used for tasks such as cognitive radio, interference
+detection, and dynamic spectrum access \cite{Kulin2018}. Signal
+detection and classification has traditionally been accomplished through static filtering and
+signal processing using expert features \cite{Ariananda2009}. However, a
+data-adaptive approach is needed to improve spectrum efficiency to meet modern
+wireless data demands.
+
+For this project, I have developed a training and testing dataset generation
+tool for RF signal classification networks. This tool follows the process outlined
+in \cite{OShea2016}, which uses GNU Radio to simulate the effects of hardware
+and propagation through a channel (e.g., free space). The tool is currently
+capable of simulating six different types of signals (four
+communications-based, two radar-based) and my object-oriented approach makes it
+easily extensible to others. To verify the output of the tool, I have also
+implemented a modified version of the convolutional neural network (CNN)
+described in \cite{OShea2016a}.
 
 
 \section{Methodology}
 
-Describe the technique you are working 
-with e.g., if you are implementing/developing 
-an algorithm, explain that algorithm 
-mathematically. 
+Describe the technique you are working
+with e.g., if you are implementing/developing
+an algorithm, explain that algorithm
+mathematically.
 
 \section{Experiment}
 
 \subsection{Data Preparation}
 
-Describe how you collected data, how 
-you cleaned the data (if you did). 
+Describe how you collected data, how
+you cleaned the data (if you did).
 
 \subsection{Experiment Design}
 
-Describe how you design experiment, 
-e.g., how to split training data and testing 
-data; how to choose hyper-parameters; how 
+Describe how you design experiment,
+e.g., how to split training data and testing
+data; how to choose hyper-parameters; how
 to evaluate model performance (accuracy/f1/AUC).
 
 \subsection{Results and Discussion}
 
-Present your experimental results and discuss 
-the results (e.g. what can we learn from the 
+Present your experimental results and discuss
+the results (e.g. what can we learn from the
 results?)
 
 \bibliographystyle{plain}
-\bibliography{reference} % add reference.bib yourself 
+\bibliography{../reference} % add reference.bib yourself 
 
 \end{document}
