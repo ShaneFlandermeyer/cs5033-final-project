@@ -1,6 +1,5 @@
 # Subdirectories
 data/
-figures/
 logs/
 build*/
 examples/grc/*.py

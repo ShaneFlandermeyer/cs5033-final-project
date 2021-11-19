@@ -1,9 +1,20 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb,bm,mathtools,upgreek}
 \usepackage{caption}
-\usepackage{subcaption}
-
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{fixmath}
+\usepackage[T1]{fontenc}
 \usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum}
+\usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{optidef}
+
+\graphicspath{ {../figures/} }
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{.5em}
@@ -12,20 +23,12 @@
 \author{Shane Flandermeyer}
 \date{}
 
+% TODO: Make the spacing look good
 \begin{document}
 
 \maketitle
 
 \section{Introduction}
-
-% Describe your research problem, 
-% including background, related work, etc. 
-
-% overview your proposed study, e.g. 
-% implement an algorithm and evaluate 
-% its performance; apply ML to a new 
-% application problem and evaluate its 
-% performance. 
 
 The rapid evolution of wireless communications technologies such as 4G/5G and the internet-of-things (IoT)
 has radically altered daily life. These technologies utilize the radio frequency (RF) portion of the electro-
@@ -51,19 +54,74 @@ described in \cite{OShea2016a}.
 
 \section{Methodology}
 
-Describe the technique you are working
-with e.g., if you are implementing/developing
-an algorithm, explain that algorithm
-mathematically.
+% Describe the technique you are working
+% with e.g., if you are implementing/developing
+% an algorithm, explain that algorithm
+% mathematically.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\linewidth]{qpsk.png}
+    \caption{RRC-filtered QPSK signal}
+    \label{fig:qpsk}
+\end{figure}
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{sro.png}
+        \caption[]%
+        {{\small Sample Rate Offset}}    
+        \label{fig:sro}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}  
+        \centering 
+        \includegraphics[width=\textwidth]{cfo.png}
+        \caption[]%
+        {{\small Center Frequency Offset }}    
+        \label{fig:cfo}
+    \end{subfigure}
+    \vskip\baselineskip
+    \begin{subfigure}[b]{0.45\textwidth}   
+        \centering 
+        \includegraphics[width=\textwidth]{fading.png}
+        \caption[]%
+        {{\small Channel Fading}}    
+        \label{fig:fading}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}   
+        \centering 
+        \includegraphics[width=\textwidth]{awgn.png}
+        \caption[]%
+        {{\small Additive White Gaussian Noise}}    
+        \label{fig:mean and std of net44}
+    \end{subfigure}
+    \caption[]
+    {} 
+    \label{fig:channel model}
+\end{figure*}
 
 \section{Experiment}
 
 \subsection{Data Preparation}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{waveforms.png}
+    \caption{Waveforms used for Experiment}
+    \label{fig: Waveforms used for Experiment}
+\end{figure}
+
+
 Describe how you collected data, how
 you cleaned the data (if you did).
 
 \subsection{Experiment Design}
+
+% TODO: Describe the simulation loop in synthesize_data
 
 Describe how you design experiment,
 e.g., how to split training data and testing
