@@ -1,9 +1,23 @@
+# Subdirectories
+data/
+logs/
+build*/
+examples/grc/*.py
+
+# Latex
+*.bak
+*.fls
+*.log
+*.synctex.gz
+*.aux
+*.fdb_latexmk
+*.bbl
+*.blg
+
+# Python stuff
 *~
 *.pyc
 *.pyo
-build*/
-examples/grc/*.py
-*.bak
-data/
-figures/
-logs/
+
+
+
